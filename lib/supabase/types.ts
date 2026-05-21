@@ -10,6 +10,7 @@ export type Profile = {
   emergency_reserve_current: number
   onboarding_completed: boolean
   modo_aperto: boolean
+  notifications_enabled: boolean
   next_payday: string | null
   plan: string
   created_at: string
