@@ -4,6 +4,8 @@ import { useState, useMemo, useEffect } from "react"
 import { useSearchParams } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { createClient, hasSupabaseConfig } from "@/lib/supabase/client"
+import { useRouter } from "next/navigation"
+import { AdaptiveLogo } from "@/components/adaptive-logo"
 import { getPostLoginPath } from "@/lib/auth/post-login-path"
 import { Sparkles, Mail, Lock, ArrowRight, Loader2, AlertCircle } from "lucide-react"
 
@@ -151,7 +153,7 @@ export default function LoginPage() {
               transition={{ delay: 0.1 }}
               className="w-16 h-16 rounded-3xl flex items-center justify-center glow-primary mb-6"
             >
-              <img src="/branding/logo.png" alt="Nexus Finance" className="w-16 h-16 object-contain" />
+              <AdaptiveLogo className="w-16 h-16 object-contain" />
             </motion.div>
             <h1 className="text-3xl font-bold text-foreground tracking-tight">Nexus Finance</h1>
             <p className="text-muted-foreground mt-2 text-sm">

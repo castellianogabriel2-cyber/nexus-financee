@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion"
 import { useEffect, useState } from "react"
+import { AdaptiveLogo } from "@/components/adaptive-logo"
 
 export function LoadingScreen() {
   const [mounted, setMounted] = useState(false)
@@ -25,7 +26,7 @@ export function LoadingScreen() {
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           className="w-20 h-20 rounded-3xl flex items-center justify-center glow-primary"
         >
-          <img src="/branding/logo.png" alt="Nexus Finance" className="w-20 h-20 object-contain" />
+          <AdaptiveLogo className="w-20 h-20 object-contain" />
         </motion.div>
 
         <motion.div

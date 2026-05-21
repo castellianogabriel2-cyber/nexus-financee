@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import { AdaptiveLogo } from "@/components/adaptive-logo"
 import { createClient } from "@/lib/supabase/client"
 import { DEFAULT_CATEGORIES, CARD_GRADIENTS } from "@/lib/finance/defaults"
 import {
@@ -243,7 +244,7 @@ export function OnboardingWizard() {
       <div className="relative w-full max-w-lg">
         <div className="flex items-center gap-3 mb-8">
           <div className="w-12 h-12 rounded-2xl flex items-center justify-center glow-primary">
-            <img src="/branding/logo.png" alt="Nexus Finance" className="w-12 h-12 object-contain" />
+            <AdaptiveLogo className="w-12 h-12 object-contain" />
           </div>
           <div>
             <h1 className="text-xl font-bold text-foreground">Configurar Nexus Finance</h1>

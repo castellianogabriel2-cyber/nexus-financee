@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { motion } from "framer-motion"
+import { AdaptiveLogo } from "@/components/adaptive-logo"
 import {
   LayoutDashboard,
   Plus,
@@ -66,7 +67,7 @@ export function Sidebar() {
           animate={{ opacity: 1, scale: 1 }}
           className="w-10 h-10 rounded-2xl flex items-center justify-center glow-primary"
         >
-          <img src="/branding/logo.png" alt="Nexus Finance" className="w-10 h-10 object-contain" />
+          <AdaptiveLogo className="w-10 h-10 object-contain" />
         </motion.div>
         <div>
           <h1 className="text-lg font-bold text-sidebar-foreground tracking-tight">Nexus Finance</h1>
