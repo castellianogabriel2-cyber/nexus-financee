@@ -59,7 +59,7 @@ export function Sidebar() {
   const displayName = profile?.full_name || "Usuario"
 
   return (
-    <aside className="hidden lg:flex flex-col w-72 h-screen fixed left-0 top-0 bg-sidebar border-r border-sidebar-border">
+    <aside className="hidden lg:flex flex-col w-72 h-screen fixed left-0 top-0 bg-sidebar border-r border-sidebar-border" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
       {/* Logo */}
       <div className="flex items-center gap-3 px-6 h-20 border-b border-sidebar-border">
         <motion.div
@@ -125,7 +125,7 @@ export function MobileNav() {
   const pathname = usePathname()
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 lg:hidden glass-strong border-t border-border/30 safe-area-bottom">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 lg:hidden glass-strong border-t border-border/30" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
       <div className="flex items-center justify-around h-20 px-2">
         {mobileNavItems.map((item) => {
           const isActive = pathname === item.href

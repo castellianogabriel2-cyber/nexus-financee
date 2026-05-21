@@ -17,15 +17,22 @@ export const metadata: Metadata = {
   title: 'Nexus Finance - Dashboard Financeiro Premium',
   description: 'Seu controle financeiro pessoal premium',
   generator: 'v0.app',
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+    viewportFit: 'cover',
+  },
   icons: {
     icon: [
       {
-        url: '/branding/logo.png',
+        url: '/branding/logo-light.png',
         sizes: 'any',
         type: 'image/png',
       },
     ],
-    apple: '/branding/logo.png',
+    apple: '/branding/logo-light.png',
   },
   manifest: '/manifest.json',
   appleWebApp: {
@@ -42,6 +49,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" className="bg-background" suppressHydrationWarning>
+      <head>
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="theme-color" content="#09090b" />
+        <meta name="color-scheme" content="dark light" />
+      </head>
       <body className="font-sans antialiased min-h-screen">
         <ThemeProvider>
           <ToastProvider>
