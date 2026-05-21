@@ -13,8 +13,6 @@ export function PremiumLockScreen() {
   const [setupPin, setSetupPin] = useState("")
   const [confirmPin, setConfirmPin] = useState("")
 
-  if (!isLocked || !pinEnabled) return null
-
   // Verificar automaticamente quando digitar 4 dígitos
   useEffect(() => {
     if (pin.length === 4 && !isSetup) {
@@ -68,6 +66,9 @@ export function PremiumLockScreen() {
       console.error("Biometric error:", error)
     }
   }
+
+  // Return condicional DEPOIS de todos os hooks
+  if (!isLocked || !pinEnabled) return null
 
   const PinDot = ({ filled }: { filled: boolean }) => (
     <motion.div

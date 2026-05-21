@@ -35,13 +35,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     let mounted = true
 
+    // Timeout de segurança para garantir que loading seja false após 5 segundos
+    const timeoutId = setTimeout(() => {
+      if (mounted && loading) {
+        console.warn("Auth loading timeout - forcing loading to false")
+        setLoading(false)
+      }
+    }, 5000)
+
     const syncSession = async () => {
-      const { data: { user: authUser } } = await supabase.auth.getUser()
-      const { data: { session: currentSession } } = await supabase.auth.getSession()
-      if (!mounted) return
-      setUser(authUser ?? null)
-      setSession(currentSession)
-      setLoading(false)
+      try {
+        const { data: { user: authUser } } = await supabase.auth.getUser()
+        const { data: { session: currentSession } } = await supabase.auth.getSession()
+        if (!mounted) return
+        setUser(authUser ?? null)
+        setSession(currentSession)
+        setLoading(false)
+      } catch (error) {
+        console.error("Error syncing session:", error)
+        if (mounted) {
+          setLoading(false)
+        }
+      }
     }
 
     syncSession()
@@ -57,6 +72,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     return () => {
       mounted = false
+      clearTimeout(timeoutId)
       subscription.unsubscribe()
     }
   }, [supabase])

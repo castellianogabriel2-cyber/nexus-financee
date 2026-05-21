@@ -126,27 +126,40 @@ export function FinanceProvider({
       return
     }
 
-    const uid = user.id
-    const [p, c, t, cardsRes, g, i, cal, fd] = await Promise.all([
-      supabase.from("profiles").select("*").eq("id", uid).single(),
-      supabase.from("categories").select("*").eq("user_id", uid).order("name"),
-      supabase.from("transactions").select("*").eq("user_id", uid).order("transaction_date", { ascending: false }),
-      supabase.from("cards").select("*").eq("user_id", uid),
-      supabase.from("goals").select("*").eq("user_id", uid),
-      supabase.from("installments").select("*").eq("user_id", uid),
-      supabase.from("calendar_events").select("*").eq("user_id", uid).order("event_date"),
-      supabase.from("fund_deposits").select("*").eq("user_id", uid).order("deposit_date", { ascending: false }),
-    ])
+    // Timeout de segurança para garantir que loading seja false após 5 segundos
+    const timeoutId = setTimeout(() => {
+      console.warn("Finance loading timeout - forcing loading to false")
+      setLoading(false)
+    }, 5000)
 
-    if (p.data) setProfile(p.data as Profile)
-    if (c.data) setCategories(c.data as Category[])
-    if (t.data) setTransactions(t.data as Transaction[])
-    if (cardsRes.data) setCards(cardsRes.data as Card[])
-    if (g.data) setGoals(g.data as Goal[])
-    if (i.data) setInstallments(i.data as Installment[])
-    if (cal.data) setCalendarEvents(cal.data as CalendarEvent[])
-    if (fd.data) setFundDeposits(fd.data as FundDeposit[])
-    setLoading(false)
+    try {
+      const uid = user.id
+      const [p, c, t, cardsRes, g, i, cal, fd] = await Promise.all([
+        supabase.from("profiles").select("*").eq("id", uid).single(),
+        supabase.from("categories").select("*").eq("user_id", uid).order("name"),
+        supabase.from("transactions").select("*").eq("user_id", uid).order("transaction_date", { ascending: false }),
+        supabase.from("cards").select("*").eq("user_id", uid),
+        supabase.from("goals").select("*").eq("user_id", uid),
+        supabase.from("installments").select("*").eq("user_id", uid),
+        supabase.from("calendar_events").select("*").eq("user_id", uid).order("event_date"),
+        supabase.from("fund_deposits").select("*").eq("user_id", uid).order("deposit_date", { ascending: false }),
+      ])
+
+      if (p.data) setProfile(p.data as Profile)
+      if (c.data) setCategories(c.data as Category[])
+      if (t.data) setTransactions(t.data as Transaction[])
+      if (cardsRes.data) setCards(cardsRes.data as Card[])
+      if (g.data) setGoals(g.data as Goal[])
+      if (i.data) setInstallments(i.data as Installment[])
+      if (cal.data) setCalendarEvents(cal.data as CalendarEvent[])
+      if (fd.data) setFundDeposits(fd.data as FundDeposit[])
+      setLoading(false)
+      clearTimeout(timeoutId)
+    } catch (error) {
+      console.error("Error refreshing finance data:", error)
+      setLoading(false)
+      clearTimeout(timeoutId)
+    }
   }, [user])
 
   useEffect(() => {
