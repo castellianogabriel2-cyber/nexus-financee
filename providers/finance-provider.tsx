@@ -35,6 +35,16 @@ import {
 } from "@/lib/finance/compute"
 import { generateFinancialInsights } from "@/lib/finance/insights"
 import { computeModoAperto } from "@/lib/finance/modo-aperto"
+import {
+  computeFinancialScore,
+  predictSpending,
+  analyzeBehavior,
+  generateFinancialAlerts,
+  projectEconomy,
+  projectCardPayments,
+  analyzeWeeklySpending,
+  analyzeMonthlySpending,
+} from "@/lib/finance/analytics"
 import type { User } from "@supabase/supabase-js"
 
 type FinanceContextValue = {
@@ -63,6 +73,14 @@ type FinanceContextValue = {
   expenseMoM: number
   incomeMoM: number
   periodLabel: string
+  financialScore: ReturnType<typeof computeFinancialScore>
+  spendingPrediction: ReturnType<typeof predictSpending>
+  behaviorAnalysis: ReturnType<typeof analyzeBehavior>
+  financialAlerts: ReturnType<typeof generateFinancialAlerts>
+  economyProjection: ReturnType<typeof projectEconomy>
+  cardProjections: ReturnType<typeof projectCardPayments>
+  weeklyAnalysis: ReturnType<typeof analyzeWeeklySpending>
+  monthlyAnalysis: ReturnType<typeof analyzeMonthlySpending>
   refresh: () => Promise<void>
   addTransaction: (payload: Omit<Transaction, "id" | "user_id" | "created_at" | "updated_at">) => Promise<{ error: string | null }>
   updateTransaction: (id: string, payload: Partial<Transaction>) => Promise<{ error: string | null }>
@@ -197,6 +215,14 @@ export function FinanceProvider({
       incomeMoM: computeMoMChange(transactions, "income"),
       periodLabel: formatPeriodLabel(),
       hasData: transactions.length > 0 || Number(profile?.current_balance) > 0,
+      financialScore: computeFinancialScore(transactions, profile),
+      spendingPrediction: predictSpending(transactions),
+      behaviorAnalysis: analyzeBehavior(transactions, categories),
+      financialAlerts: generateFinancialAlerts(transactions, categories, profile, cards),
+      economyProjection: projectEconomy(transactions, categories, profile),
+      cardProjections: projectCardPayments(transactions, cards),
+      weeklyAnalysis: analyzeWeeklySpending(transactions),
+      monthlyAnalysis: analyzeMonthlySpending(transactions),
     }
   }, [transactions, categories, cards, goals, profile])
 
