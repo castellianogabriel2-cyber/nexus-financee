@@ -23,5 +23,5 @@ export async function GET(request: Request) {
       ? nextParam
       : await getPostLoginPath(supabase, data.user.id)
 
-  return NextResponse.redirect(`${origin}${destination}`)
+  return NextResponse.redirect(`${origin}/auth/confirmed`)
 }
