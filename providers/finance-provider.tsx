@@ -87,6 +87,9 @@ type FinanceContextValue = {
   deleteTransaction: (id: string) => Promise<{ error: string | null }>
   updateProfile: (payload: Partial<Profile>) => Promise<{ error: string | null }>
   toggleModoAperto: (enabled: boolean) => Promise<void>
+  addCard: (
+  payload: Omit<Card, "id" | "user_id" | "created_at" | "updated_at">
+) => Promise<{ error: string | null }>
   uploadAttachment: (file: File) => Promise<{ url: string | null; error: string | null }>
 }
 
@@ -264,7 +267,22 @@ export function FinanceProvider({
     await refresh()
     return { error: error?.message ?? null }
   }
+const addCard = async (
+  payload: Omit<Card, "id" | "user_id" | "created_at" | "updated_at">
+) => {
+  if (!user) return { error: "Não autenticado" }
 
+  const supabase = createClient()
+
+  const { error } = await supabase.from("cards").insert({
+    ...payload,
+    user_id: user.id,
+  })
+
+  await refresh()
+
+  return { error: error?.message ?? null }
+}
   const updateProfile = async (payload: Partial<Profile>) => {
     if (!user) return { error: "Nao autenticado" }
     const supabase = createClient()
@@ -309,6 +327,7 @@ export function FinanceProvider({
     deleteTransaction,
     updateProfile,
     toggleModoAperto,
+    addCard,
     uploadAttachment,
   }
 

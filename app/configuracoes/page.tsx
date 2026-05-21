@@ -672,10 +672,10 @@ export default function ConfiguracoesPage() {
       <Modal open={activeModal === "help"} onClose={() => setActiveModal(null)} title="Central de Ajuda">
         <div className="space-y-4">
           {[
-            { q: "Como altero minha senha?", a: "Vá em Configuracoes > Senha" },
-            { q: "Como adiciono um cartao?", a: "Vá em Configuracoes > Cartoes" },
-            { q: "O que e Modo Aperto?", a: "Modo de orcamento de sobrevivencia" },
-            { q: "Como exporto meus dados?", a: "Vá em Configuracoes > Exportar dados" },
+            { q: "Como altero minha senha?", a: "Vá em Configurações > Senha" },
+            { q: "Como adiciono um cartão?", a: "Vá em Configurações > Cartões" },
+            { q: "O que é Modo Aperto?", a: "Modo de orçamento de sobrevivência" },
+            { q: "Como exporto meus dados?", a: "Vá em Configurações > Exportar dados" },
           ].map((item, i) => (
             <div key={i} className="p-4 rounded-xl bg-card/50 border border-border/50">
               <p className="font-medium text-foreground mb-1">{item.q}</p>

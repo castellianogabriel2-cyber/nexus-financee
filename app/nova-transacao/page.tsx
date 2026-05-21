@@ -134,7 +134,7 @@ export default function NovaTransacaoPage() {
         >
           <ArrowLeft className="w-5 h-5" />
         </Link>
-        <h1 className="text-xl font-semibold text-foreground">Nova Transacao</h1>
+        <h1 className="text-xl font-semibold text-foreground">Nova Transação</h1>
         <div className="w-10" />
       </div>
 
@@ -169,7 +169,7 @@ export default function NovaTransacaoPage() {
               </button>
             </div>
             <div className="bg-card/30 border border-border/50 rounded-3xl p-8 text-center">
-              <p className="text-sm text-muted-foreground mb-4">Valor da transacao</p>
+              <p className="text-sm text-muted-foreground mb-4">Valor da transação</p>
               <div className="flex items-center justify-center gap-2">
                 <span className="text-3xl text-muted-foreground">R$</span>
                 <input
@@ -262,7 +262,7 @@ export default function NovaTransacaoPage() {
             </div>
             {selectedPayment === "credito" && (
               <div className="space-y-3">
-                <p className="text-sm text-muted-foreground">Selecione o cartao</p>
+                <p className="text-sm text-muted-foreground">Selecione o cartão</p>
                 {cardsData.map((card) => (
                   <button
                     key={card.id}

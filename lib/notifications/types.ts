@@ -24,7 +24,7 @@ export type NotificationCategory =
   | "savings"
   | "summary"
 
-export interface Notification {
+export interface AppNotification {
   id: string
   userId: string
   type: NotificationType
@@ -183,7 +183,7 @@ export function createNotification(
   userId: string,
   type: NotificationType,
   data: Record<string, unknown>
-): Omit<Notification, "id" | "read" | "createdAt" | "sentAt"> {
+): Omit<AppNotification, "id" | "read" | "createdAt" | "sentAt"> {
   const template = NOTIFICATION_TEMPLATES[type]
   
   let title = template.title

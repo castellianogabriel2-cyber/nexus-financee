@@ -1,7 +1,7 @@
 import type { Transaction, Category, Profile, Card, Goal } from "@/lib/supabase/types"
 import { computeMonthExpenses, computeSaldo, isCurrentMonth } from "../finance/compute"
 import { analyzeBehavior, generateFinancialAlerts } from "../finance/analytics"
-import { createNotification, type NotificationType } from "./types"
+import { createNotification, type NotificationType, type AppNotification } from "./types"
 
 export function generateBillDueNotification(
   userId: string,
@@ -123,7 +123,7 @@ export function analyzeAndGenerateNotifications(
   cards: Card[],
   goals: Goal[]
 ) {
-  const notifications: Omit<Notification, "id" | "read" | "createdAt" | "sentAt">[] = []
+  const notifications: Omit<AppNotification, "id" | "read" | "createdAt" | "sentAt">[] = []
 
   // Check for excessive spending
   const behavior = analyzeBehavior(transactions, categories)
@@ -178,7 +178,7 @@ export function analyzeAndGenerateNotifications(
 }
 
 export function shouldSendNotification(
-  notification: Omit<Notification, "id" | "read" | "createdAt" | "sentAt">,
+  notification: Omit<AppNotification, "id" | "read" | "createdAt" | "sentAt">,
   preferences: {
     enabled: boolean
     categories: {

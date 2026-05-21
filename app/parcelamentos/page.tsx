@@ -24,7 +24,7 @@ export default function ParcelamentosPage() {
       parcelas: item.installments_total,
       parcelaAtual: item.installment_current,
       valorParcela: Number(item.monthly_amount),
-      cartao: card?.bank || "—",
+      cartão: card?.bank || "—",
       color: card?.color || "from-purple-600 to-purple-900",
       vencimento: item.next_due_date
         ? new Date(item.next_due_date + "T12:00:00").getDate().toString()
@@ -46,8 +46,8 @@ export default function ParcelamentosPage() {
         <h1 className="text-2xl font-bold text-foreground mb-8">Parcelamentos</h1>
         <EmptyState
           title="Sem parcelamentos"
-          description="Compras parceladas no cartao aparecerao aqui."
-          actionLabel="Nova transacao"
+          description="Compras parceladas no cartão aparecerão aqui."
+          actionLabel="Nova transação"
         />
       </div>
     )
@@ -118,7 +118,7 @@ export default function ParcelamentosPage() {
                   <div className={`w-12 h-8 rounded-lg bg-gradient-to-br ${item.color}`} />
                   <div>
                     <h3 className="text-lg font-semibold text-foreground">{item.name}</h3>
-                    <p className="text-sm text-muted-foreground">{item.cartao}</p>
+                    <p className="text-sm text-muted-foreground">{item.cartão}</p>
                   </div>
                 </div>
                 {item.concluido ? (

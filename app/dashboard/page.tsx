@@ -274,9 +274,9 @@ export default function DashboardPage() {
       {!hasData && (
         <div className="mb-8">
           <EmptyState
-            title="Seu dashboard esta zerado"
-            description="Adicione transacoes ou complete seu perfil para ver graficos e indicadores reais."
-            actionLabel="Nova transacao"
+            title="Seu dashboard está zerado"
+            description="Adicione transações ou complete seu perfil para ver gráficos e indicadores reais."
+            actionLabel="Nova transação"
           />
         </div>
       )}

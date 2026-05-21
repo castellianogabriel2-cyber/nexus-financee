@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import type { Notification, NotificationPreferences } from "@/lib/notifications/types"
+import type { AppNotification, NotificationPreferences } from "@/lib/notifications/types"
 
 export function usePushNotifications() {
   const [permission, setPermission] = useState<NotificationPermission>("default")
@@ -46,13 +46,13 @@ export function usePushNotifications() {
     }
   }, [supported, permission])
 
-  const sendLocalNotification = useCallback((notification: Omit<Notification, "id" | "read" | "createdAt">) => {
+  const sendLocalNotification = useCallback((notification: Omit<AppNotification, "id" | "read" | "createdAt" | "sentAt">) => {
     if (!supported || permission !== "granted") {
       return { success: false, error: "Permissão não concedida" }
     }
 
     try {
-      const notif = new Notification(notification.title, {
+      const notif = new window.Notification(notification.title, {
         body: notification.body,
         icon: "/logo-light.png",
         badge: "/logo-light.png",
@@ -76,7 +76,7 @@ export function usePushNotifications() {
   }, [supported, permission])
 
   const scheduleNotification = useCallback((
-    notification: Omit<Notification, "id" | "read" | "createdAt" | "sentAt">,
+    notification: Omit<AppNotification, "id" | "read" | "createdAt" | "sentAt">,
     delayMs: number
   ) => {
     if (!supported || permission !== "granted") {
@@ -90,7 +90,7 @@ export function usePushNotifications() {
     return { success: true, timeoutId }
   }, [supported, permission, sendLocalNotification])
 
-  const sendPushNotification = useCallback(async (notification: Omit<Notification, "id" | "read" | "createdAt" | "sentAt">) => {
+  const sendPushNotification = useCallback(async (notification: Omit<AppNotification, "id" | "read" | "createdAt" | "sentAt">) => {
     if (!registration) {
       return { success: false, error: "Service Worker não registrado" }
     }
