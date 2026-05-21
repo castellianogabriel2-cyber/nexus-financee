@@ -38,6 +38,7 @@ import { Modal } from "@/components/modal"
 import { createClient } from "@/lib/supabase/client"
 import { useTheme } from "next-themes"
 import { FinancialScoreCard } from "@/components/analytics/insight-cards"
+import { PinSettings } from "@/components/security/pin-settings"
 
 const settingsSections = [
   {
@@ -441,6 +442,16 @@ export default function ConfiguracoesPage() {
         </div>
       </motion.div>
       <ModoApertoPanel open={modoApertoOpen} onClose={() => setModoApertoOpen(false)} />
+
+      {/* PIN Settings */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.09 }}
+        className="mb-6"
+      >
+        <PinSettings />
+      </motion.div>
 
       {/* Settings Sections */}
       <div className="space-y-6">

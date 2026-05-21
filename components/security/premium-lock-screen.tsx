@@ -1,19 +1,29 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Lock, Fingerprint, Eye, EyeOff, X } from "lucide-react"
 import { useSecurity } from "@/hooks/use-security"
 
 export function PremiumLockScreen() {
-  const { isLocked, verifyPin, biometricEnabled, isBiometricAvailable, unlock, hideValues, toggleHideValues } = useSecurity()
+  const { isLocked, verifyPin, biometricEnabled, isBiometricAvailable, unlock, hideValues, toggleHideValues, pinEnabled } = useSecurity()
   const [pin, setPin] = useState("")
   const [error, setError] = useState(false)
   const [isSetup, setIsSetup] = useState(false)
   const [setupPin, setSetupPin] = useState("")
   const [confirmPin, setConfirmPin] = useState("")
 
-  if (!isLocked) return null
+  if (!isLocked || !pinEnabled) return null
+
+  // Verificar automaticamente quando digitar 4 dígitos
+  useEffect(() => {
+    if (pin.length === 4 && !isSetup) {
+      const timer = setTimeout(() => {
+        handlePinSubmit()
+      }, 300)
+      return () => clearTimeout(timer)
+    }
+  }, [pin, isSetup])
 
   const handlePinInput = (digit: string) => {
     if (pin.length < 4) {
@@ -37,12 +47,15 @@ export function PremiumLockScreen() {
         }
       }
     } else {
-      if (verifyPin(pin)) {
-        unlock()
-      } else {
-        setError(true)
-        setTimeout(() => setError(false), 1000)
-        setPin("")
+      if (pin.length === 4) {
+        if (verifyPin(pin)) {
+          setPin("")
+          setError(false)
+        } else {
+          setError(true)
+          setTimeout(() => setError(false), 1000)
+          setPin("")
+        }
       }
     }
   }
@@ -153,7 +166,7 @@ export function PremiumLockScreen() {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="grid grid-cols-3 gap-4 mb-8"
+          className="grid grid-cols-3 gap-4 mb-6"
         >
           {["1", "2", "3", "4", "5", "6", "7", "8", "9"].map((digit) => (
             <PinButton key={digit} digit={digit} />
@@ -176,6 +189,22 @@ export function PremiumLockScreen() {
             <X className="w-6 h-6 text-white/60" />
           </motion.button>
         </motion.div>
+
+        {/* Desbloquear Button */}
+        {!isSetup && (
+          <motion.button
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={handlePinSubmit}
+            disabled={pin.length !== 4}
+            className="w-full py-4 rounded-2xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-semibold text-lg hover:from-primary/90 hover:to-primary/70 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Desbloquear
+          </motion.button>
+        )}
 
         {/* Setup Mode Toggle */}
         {!isSetup && (

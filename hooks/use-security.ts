@@ -6,16 +6,18 @@ const PIN_STORAGE_KEY = "nexus_pin"
 const BIOMETRIC_ENABLED_KEY = "nexus_biometric_enabled"
 const SESSION_TIMEOUT_KEY = "nexus_session_timeout"
 const AUTO_LOCK_KEY = "nexus_auto_lock"
+const PIN_ENABLED_KEY = "nexus_pin_enabled"
 
 const DEFAULT_SESSION_TIMEOUT = 5 * 60 * 1000 // 5 minutos
 const DEFAULT_AUTO_LOCK = true
 
 export function useSecurity() {
-  const [isLocked, setIsLocked] = useState(true)
+  const [isLocked, setIsLocked] = useState(false)
   const [pin, setPin] = useState<string | null>(null)
   const [biometricEnabled, setBiometricEnabled] = useState(false)
   const [sessionTimeout, setSessionTimeout] = useState(DEFAULT_SESSION_TIMEOUT)
   const [autoLock, setAutoLock] = useState(DEFAULT_AUTO_LOCK)
+  const [pinEnabled, setPinEnabled] = useState(false)
   const [lastActivity, setLastActivity] = useState(Date.now())
   const [hideValues, setHideValues] = useState(false)
 
@@ -25,6 +27,14 @@ export function useSecurity() {
     const storedBiometric = localStorage.getItem(BIOMETRIC_ENABLED_KEY)
     const storedTimeout = localStorage.getItem(SESSION_TIMEOUT_KEY)
     const storedAutoLock = localStorage.getItem(AUTO_LOCK_KEY)
+    const storedPinEnabled = localStorage.getItem(PIN_ENABLED_KEY)
+
+    // Limpar PIN quebrado se pinEnabled não existir
+    if (storedPin && !storedPinEnabled) {
+      localStorage.removeItem(PIN_STORAGE_KEY)
+      localStorage.removeItem(PIN_ENABLED_KEY)
+      return
+    }
 
     if (storedPin) {
       setPin(storedPin)
@@ -38,11 +48,16 @@ export function useSecurity() {
     if (storedAutoLock) {
       setAutoLock(storedAutoLock === "true")
     }
+    if (storedPinEnabled) {
+      setPinEnabled(storedPinEnabled === "true")
+      // Só bloquear se PIN estiver ativado
+      setIsLocked(storedPinEnabled === "true")
+    }
   }, [])
 
   // Verificar timeout de sessão
   useEffect(() => {
-    if (!autoLock || !pin) return
+    if (!autoLock || !pin || !pinEnabled) return
 
     const checkTimeout = () => {
       const now = Date.now()
@@ -53,7 +68,7 @@ export function useSecurity() {
 
     const interval = setInterval(checkTimeout, 1000)
     return () => clearInterval(interval)
-  }, [autoLock, sessionTimeout, lastActivity, pin])
+  }, [autoLock, sessionTimeout, lastActivity, pin, pinEnabled])
 
   // Atualizar última atividade
   const updateActivity = useCallback(() => {
@@ -65,6 +80,29 @@ export function useSecurity() {
     const encryptedPin = btoa(newPin) // Criptografia básica
     localStorage.setItem(PIN_STORAGE_KEY, encryptedPin)
     setPin(encryptedPin)
+  }, [])
+
+  // Ativar PIN
+  const enablePin = useCallback(() => {
+    localStorage.setItem(PIN_ENABLED_KEY, "true")
+    setPinEnabled(true)
+    setIsLocked(true)
+  }, [])
+
+  // Desativar PIN
+  const disablePin = useCallback(() => {
+    localStorage.setItem(PIN_ENABLED_KEY, "false")
+    setPinEnabled(false)
+    setIsLocked(false)
+  }, [])
+
+  // Limpar PIN
+  const clearPin = useCallback(() => {
+    localStorage.removeItem(PIN_STORAGE_KEY)
+    localStorage.removeItem(PIN_ENABLED_KEY)
+    setPin(null)
+    setPinEnabled(false)
+    setIsLocked(false)
   }, [])
 
   // Verificar PIN
@@ -131,9 +169,13 @@ export function useSecurity() {
     biometricEnabled,
     sessionTimeout,
     autoLock,
+    pinEnabled,
     hideValues,
     setupPin,
     verifyPin,
+    enablePin,
+    disablePin,
+    clearPin,
     enableBiometric,
     disableBiometric,
     setSessionTimeoutMinutes,
