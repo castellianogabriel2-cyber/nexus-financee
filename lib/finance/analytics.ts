@@ -436,10 +436,9 @@ export function analyzeWeeklySpending(transactions: Transaction[]): WeeklyAnalys
     })
     const topCategory = Array.from(categorySpending.entries()).sort((a, b) => b[1] - a[1])[0]?.[0] || "outros"
     
-    // Compare to average
-    const allWeeks = analyzeWeeklySpending(transactions)
-    const avgSpending = allWeeks.length > 0 
-      ? allWeeks.reduce((sum, w) => sum + w.totalSpent, 0) / allWeeks.length 
+    // Compare to average (calculate from current analyses being built)
+    const avgSpending = analyses.length > 0 
+      ? analyses.reduce((sum, w) => sum + w.totalSpent, 0) / analyses.length 
       : totalSpent
     const comparedToAverage = avgSpending > 0 ? ((totalSpent - avgSpending) / avgSpending) * 100 : 0
     
