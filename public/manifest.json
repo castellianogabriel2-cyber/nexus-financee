@@ -1,12 +1,16 @@
 {
-  "name": "Nexus Finance",
-  "short_name": "Nexus",
-  "description": "Seu controle financeiro pessoal premium",
+  "name": "Nexus Finance - Dashboard Financeiro Premium",
+  "short_name": "Nexus Finance",
+  "description": "Seu controle financeiro pessoal premium com IA inteligente",
   "start_url": "/",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
   "background_color": "#09090b",
   "theme_color": "#8b5cf6",
-  "orientation": "portrait",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "dir": "ltr",
+  "lang": "pt-BR",
   "icons": [
     {
       "src": "/branding/logo-light.png",
@@ -60,10 +64,16 @@
       "src": "/branding/logo-light.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/branding/logo-light.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "apple-touch-icon"
     }
   ],
-  "categories": ["finance", "productivity"],
+  "categories": ["finance", "productivity", "business"],
   "screenshots": [],
   "shortcuts": [
     {
@@ -89,6 +99,23 @@
           "sizes": "96x96"
         }
       ]
+    },
+    {
+      "name": "Carteira",
+      "short_name": "Carteira",
+      "description": "Ver carteira",
+      "url": "/carteira",
+      "icons": [
+        {
+          "src": "/branding/logo-light.png",
+          "sizes": "96x96"
+        }
+      ]
     }
-  ]
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  }
 }

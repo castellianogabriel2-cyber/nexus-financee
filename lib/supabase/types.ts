@@ -60,6 +60,10 @@ export type Transaction = {
   installments_total: number
   installment_current: number
   parent_installment_id: string | null
+  is_recurring: boolean
+  recurrence_frequency: "daily" | "weekly" | "monthly" | "yearly" | null
+  recurrence_end_date: string | null
+  recurrence_count: number | null
   created_at: string
   updated_at: string
 }

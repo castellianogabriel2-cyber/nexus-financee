@@ -7,13 +7,14 @@ import {
   AlertCircle,
   CheckCircle,
   ChevronRight,
+  History,
 } from "lucide-react"
 
 import { useFinance } from "@/providers/finance-provider"
 import { EmptyState } from "@/components/empty-state"
 
 export default function ParcelamentosPage() {
-  const { installments, cards } = useFinance()
+  const { installments, cards, transactions } = useFinance()
 
   const parcelamentos = installments.map((item, i) => {
     const card = cards.find((c) => c.id === item.card_id)
@@ -32,6 +33,11 @@ export default function ParcelamentosPage() {
       concluido: item.status === "completed",
     }
   })
+
+  // Histórico de parcelas pagas
+  const parcelasPagas = transactions.filter(
+    (t) => t.installments_total > 1 && t.parent_installment_id
+  )
 
   const parcelamentosAtivos = parcelamentos.filter((p) => !p.concluido)
   const totalMensal = parcelamentosAtivos.reduce((acc, p) => acc + p.valorParcela, 0)
@@ -191,6 +197,49 @@ export default function ParcelamentosPage() {
           </p>
         </div>
       </motion.div>
+
+      {/* Histórico de parcelas pagas */}
+      {parcelasPagas.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="mt-8"
+        >
+          <div className="flex items-center gap-2 mb-4">
+            <History className="w-5 h-5 text-muted-foreground" />
+            <h2 className="text-lg font-semibold text-foreground">Histórico de parcelas pagas</h2>
+          </div>
+          <div className="space-y-2">
+            {parcelasPagas.slice(0, 5).map((parcela) => (
+              <motion.div
+                key={parcela.id}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="flex items-center justify-between p-3 rounded-xl bg-card/20 border border-border/30"
+              >
+                <div className="flex items-center gap-3">
+                  <CheckCircle className="w-4 h-4 text-success" />
+                  <div>
+                    <p className="text-sm font-medium text-foreground">{parcela.description || "Sem descrição"}</p>
+                    <p className="text-xs text-muted-foreground">
+                      Parcela {parcela.installment_current} de {parcela.installments_total}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-semibold text-foreground">
+                    R$ {parcela.amount.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {new Date(parcela.transaction_date).toLocaleDateString("pt-BR")}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      )}
     </div>
   )
 }

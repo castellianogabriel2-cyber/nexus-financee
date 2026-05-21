@@ -18,6 +18,7 @@ import {
   Sparkles,
   Receipt,
   Calendar,
+  Download,
 } from "lucide-react"
 import { useFinance } from "@/providers/finance-provider"
 
@@ -32,6 +33,7 @@ const navItems = [
   { href: "/parcelamentos", icon: CalendarClock, label: "Parcelamentos" },
   { href: "/calendario", icon: Calendar, label: "Calendario" },
   { href: "/analytics", icon: BarChart3, label: "Analytics" },
+  { href: "/exportar", icon: Download, label: "Exportar" },
   { href: "/configuracoes", icon: Settings, label: "Configuracoes" },
 ]
 
@@ -39,7 +41,7 @@ const mobileNavItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Home" },
   { href: "/carteira", icon: Wallet, label: "Carteira" },
   { href: "/nova-transacao", icon: Plus, label: "Novo", isMain: true },
-  { href: "/analytics", icon: PieChart, label: "Analytics" },
+  { href: "/exportar", icon: Download, label: "Exportar" },
   { href: "/configuracoes", icon: Settings, label: "Config" },
 ]
 

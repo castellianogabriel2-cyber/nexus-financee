@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { AppShell } from '@/components/app-shell'
@@ -6,6 +6,8 @@ import { AuthProvider } from '@/providers/auth-provider'
 import { AuthRouteGuard } from '@/components/auth-route-guard'
 import { ThemeProvider } from '@/components/theme-provider'
 import { ToastProvider } from '@/components/notifications/toast'
+import { ServiceWorkerRegistration } from '@/components/service-worker-registration'
+import { PremiumLockScreen } from '@/components/security/premium-lock-screen'
 import './globals.css'
 
 export const dynamic = 'force-dynamic'
@@ -17,13 +19,6 @@ export const metadata: Metadata = {
   title: 'Nexus Finance - Dashboard Financeiro Premium',
   description: 'Seu controle financeiro pessoal premium',
   generator: 'v0.app',
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
-    viewportFit: 'cover',
-  },
   icons: {
     icon: [
       {
@@ -51,6 +46,14 @@ export const metadata: Metadata = {
     statusBarStyle: 'default',
     title: 'Nexus Finance',
   },
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover',
   themeColor: [
     {
       media: '(prefers-color-scheme: light)',
@@ -75,8 +78,11 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="theme-color" content="#09090b" />
         <meta name="color-scheme" content="dark light" />
+        <link rel="apple-touch-icon" href="/branding/logo-light.png" />
       </head>
       <body className="font-sans antialiased min-h-screen">
+        <PremiumLockScreen />
+        <ServiceWorkerRegistration />
         <ThemeProvider>
           <ToastProvider>
             <AuthProvider>
