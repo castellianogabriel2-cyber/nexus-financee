@@ -98,5 +98,70 @@ export function generateFinancialInsights(
     }
   }
 
+  // Novo insight: Comparação com mês anterior
+  const lastMonth = new Date()
+  lastMonth.setMonth(lastMonth.getMonth() - 1)
+  const lastMonthExpenses = transactions.filter(
+    (t) => t.type === "expense" && new Date(t.transaction_date).getMonth() === lastMonth.getMonth()
+  )
+  const lastMonthTotal = lastMonthExpenses.reduce((s, t) => s + Number(t.amount), 0)
+  const thisMonthTotal = monthExpenses.reduce((s, t) => s + Number(t.amount), 0)
+  
+  if (lastMonthTotal > 0) {
+    const change = ((thisMonthTotal - lastMonthTotal) / lastMonthTotal) * 100
+    if (change > 20) {
+      insights.push({
+        id: "spending-increase",
+        type: "warning",
+        title: "Aumento de gastos",
+        message: `Seus gastos aumentaram ${change.toFixed(0)}% em relacao ao mes anterior. Fique atento!`,
+      })
+    } else if (change < -20) {
+      insights.push({
+        id: "spending-decrease",
+        type: "success",
+        title: "Reducao de gastos",
+        message: `Parabens! Seus gastos diminuiram ${Math.abs(change).toFixed(0)}% em relacao ao mes anterior.`,
+      })
+    }
+  }
+
+  // Novo insight: Gastos com delivery
+  const deliveryCat = categories.find((c) => c.slug === "delivery")
+  if (deliveryCat) {
+    const deliveryExpenses = thisWeek.filter((t) => t.category_id === deliveryCat.id)
+    const deliveryTotal = deliveryExpenses.reduce((s, t) => s + Number(t.amount), 0)
+    if (deliveryTotal > 200) {
+      insights.push({
+        id: "delivery-spending",
+        type: "warning",
+        title: "Gastos com delivery",
+        message: `Voce gastou R$ ${deliveryTotal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })} em delivery essa semana. Considere cozinhar em casa.`,
+      })
+    }
+  }
+
+  // Novo insight: Reserva de emergência
+  const emergencyReserve = Number(profile?.emergency_reserve_target ?? 0)
+  const emergencyCurrent = Number(profile?.emergency_reserve_current ?? 0)
+  if (emergencyReserve > 0) {
+    const reservePercent = (emergencyCurrent / emergencyReserve) * 100
+    if (reservePercent < 50) {
+      insights.push({
+        id: "reserve-low",
+        type: "warning",
+        title: "Reserva de emergencia",
+        message: `Sua reserva esta em ${reservePercent.toFixed(0)}%. Tente aumentar para pelo menos 50%.`,
+      })
+    } else if (reservePercent >= 100) {
+      insights.push({
+        id: "reserve-full",
+        type: "success",
+        title: "Reserva completa",
+        message: "Parabens! Voce atingiu sua meta de reserva de emergencia.",
+      })
+    }
+  }
+
   return insights.slice(0, 5)
 }

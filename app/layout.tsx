@@ -5,6 +5,7 @@ import { AppShell } from '@/components/app-shell'
 import { AuthProvider } from '@/providers/auth-provider'
 import { AuthRouteGuard } from '@/components/auth-route-guard'
 import { ThemeProvider } from '@/components/theme-provider'
+import { ToastProvider } from '@/components/notifications/toast'
 import './globals.css'
 
 export const dynamic = 'force-dynamic'
@@ -43,13 +44,15 @@ export default function RootLayout({
     <html lang="pt-BR" className="bg-background" suppressHydrationWarning>
       <body className="font-sans antialiased min-h-screen">
         <ThemeProvider>
-          <AuthProvider>
-            <AuthRouteGuard>
-              <AppShell>
-                {children}
-              </AppShell>
-            </AuthRouteGuard>
-          </AuthProvider>
+          <ToastProvider>
+            <AuthProvider>
+              <AuthRouteGuard>
+                <AppShell>
+                  {children}
+                </AppShell>
+              </AuthRouteGuard>
+            </AuthProvider>
+          </ToastProvider>
         </ThemeProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
