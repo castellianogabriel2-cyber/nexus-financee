@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import {
   User,
   Bell,
@@ -22,6 +22,13 @@ import {
   Loader2,
   Check,
   AlertCircle,
+  Trophy,
+  Flame,
+  Star,
+  Target,
+  TrendingUp,
+  Award,
+  Camera,
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/providers/auth-provider"
@@ -30,6 +37,7 @@ import { ModoApertoPanel } from "@/components/modo-aperto-panel"
 import { Modal } from "@/components/modal"
 import { createClient } from "@/lib/supabase/client"
 import { useTheme } from "next-themes"
+import { FinancialScoreCard } from "@/components/analytics/insight-cards"
 
 const settingsSections = [
   {
@@ -141,7 +149,7 @@ function getInitials(name: string | null | undefined) {
 export default function ConfiguracoesPage() {
   const router = useRouter()
   const { signOut, user } = useAuth()
-  const { profile, toggleModoAperto, updateProfile } = useFinance()
+  const { profile, toggleModoAperto, updateProfile, financialScore } = useFinance()
   const { theme, setTheme } = useTheme()
   const [modoApertoOpen, setModoApertoOpen] = useState(false)
   const [activeModal, setActiveModal] = useState<string | null>(null)
@@ -337,15 +345,20 @@ export default function ConfiguracoesPage() {
         transition={{ delay: 0.05 }}
         className="bg-card/30 border border-border/50 rounded-3xl p-6 mb-6"
       >
-        <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center">
-            <span className="text-2xl font-bold text-primary">{getInitials(profile?.full_name)}</span>
+        <div className="flex items-center gap-4 mb-6">
+          <div className="relative">
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center">
+              <span className="text-2xl font-bold text-primary">{getInitials(profile?.full_name)}</span>
+            </div>
+            <button className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-lg">
+              <Camera className="w-4 h-4 text-primary-foreground" />
+            </button>
           </div>
           <div className="flex-1">
-            <h2 className="text-lg font-semibold text-foreground">{profile?.full_name || "Usuario"}</h2>
+            <h2 className="text-xl font-semibold text-foreground">{profile?.full_name || "Usuario"}</h2>
             <p className="text-sm text-muted-foreground">{profile?.email || "—"}</p>
             <div className="flex items-center gap-2 mt-2">
-              <span className="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-xs font-medium">
+              <span className="px-3 py-1 rounded-full bg-gradient-to-r from-primary/20 to-primary/10 text-primary text-xs font-semibold border border-primary/20">
                 Premium
               </span>
               <span className="text-xs text-muted-foreground">desde Jan 2024</span>
@@ -358,6 +371,41 @@ export default function ConfiguracoesPage() {
             Editar
           </button>
         </div>
+
+        {/* Premium Stats */}
+        <div className="grid grid-cols-3 gap-4 pt-6 border-t border-border/30">
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-1 mb-1">
+              <Flame className="w-4 h-4 text-orange-400" />
+              <span className="text-lg font-bold text-foreground">12</span>
+            </div>
+            <span className="text-xs text-muted-foreground">Streak</span>
+          </div>
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-1 mb-1">
+              <Star className="w-4 h-4 text-yellow-400" />
+              <span className="text-lg font-bold text-foreground">8.5</span>
+            </div>
+            <span className="text-xs text-muted-foreground">Nível</span>
+          </div>
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-1 mb-1">
+              <Trophy className="w-4 h-4 text-purple-400" />
+              <span className="text-lg font-bold text-foreground">24</span>
+            </div>
+            <span className="text-xs text-muted-foreground">Badges</span>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Financial Score */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.06 }}
+        className="mb-6"
+      >
+        <FinancialScoreCard score={financialScore} />
       </motion.div>
 
       {/* Modo Aperto */}

@@ -28,11 +28,22 @@ export const metadata: Metadata = {
     icon: [
       {
         url: '/branding/logo-light.png',
-        sizes: 'any',
+        sizes: '192x192',
+        type: 'image/png',
+      },
+      {
+        url: '/branding/logo-light.png',
+        sizes: '512x512',
         type: 'image/png',
       },
     ],
-    apple: '/branding/logo-light.png',
+    apple: [
+      {
+        url: '/branding/logo-light.png',
+        sizes: '180x180',
+        type: 'image/png',
+      },
+    ],
   },
   manifest: '/manifest.json',
   appleWebApp: {
@@ -40,6 +51,16 @@ export const metadata: Metadata = {
     statusBarStyle: 'default',
     title: 'Nexus Finance',
   },
+  themeColor: [
+    {
+      media: '(prefers-color-scheme: light)',
+      color: '#ffffff',
+    },
+    {
+      media: '(prefers-color-scheme: dark)',
+      color: '#09090b',
+    },
+  ],
 }
 
 export default function RootLayout({
