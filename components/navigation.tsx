@@ -64,12 +64,12 @@ export function Sidebar() {
         <motion.div
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center glow-primary"
+          className="w-10 h-10 rounded-2xl flex items-center justify-center glow-primary"
         >
-          <Sparkles className="w-5 h-5 text-primary-foreground" />
+          <img src="/branding/logo.png" alt="Nexus Finance" className="w-10 h-10 object-contain" />
         </motion.div>
         <div>
-          <h1 className="text-lg font-bold text-sidebar-foreground tracking-tight">Financa</h1>
+          <h1 className="text-lg font-bold text-sidebar-foreground tracking-tight">Nexus Finance</h1>
           <p className="text-xs text-muted-foreground">{periodLabel}</p>
         </div>
       </div>

@@ -149,11 +149,11 @@ export default function LoginPage() {
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.1 }}
-              className="w-16 h-16 rounded-3xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center glow-primary mb-6"
+              className="w-16 h-16 rounded-3xl flex items-center justify-center glow-primary mb-6"
             >
-              <Sparkles className="w-8 h-8 text-primary-foreground" />
+              <img src="/branding/logo.png" alt="Nexus Finance" className="w-16 h-16 object-contain" />
             </motion.div>
-            <h1 className="text-3xl font-bold text-foreground tracking-tight">Financa</h1>
+            <h1 className="text-3xl font-bold text-foreground tracking-tight">Nexus Finance</h1>
             <p className="text-muted-foreground mt-2 text-sm">
               Login real com Supabase Auth
             </p>

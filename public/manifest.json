@@ -1,0 +1,46 @@
+{
+  "name": "Nexus Finance",
+  "short_name": "Nexus",
+  "description": "Seu controle financeiro pessoal premium",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#8b5cf6",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/branding/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["finance", "productivity"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Nova Transação",
+      "short_name": "Novo",
+      "description": "Adicionar nova transação",
+      "url": "/nova-transacao",
+      "icons": [
+        {
+          "src": "/branding/logo.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "short_name": "Home",
+      "description": "Ver dashboard",
+      "url": "/dashboard",
+      "icons": [
+        {
+          "src": "/branding/logo.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ]
+}

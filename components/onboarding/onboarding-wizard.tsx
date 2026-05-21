@@ -242,11 +242,11 @@ export function OnboardingWizard() {
       <div className="fixed inset-0 gradient-radial pointer-events-none" />
       <div className="relative w-full max-w-lg">
         <div className="flex items-center gap-3 mb-8">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center glow-primary">
-            <Sparkles className="w-6 h-6 text-primary-foreground" />
+          <div className="w-12 h-12 rounded-2xl flex items-center justify-center glow-primary">
+            <img src="/branding/logo.png" alt="Nexus Finance" className="w-12 h-12 object-contain" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-foreground">Configurar Financa</h1>
+            <h1 className="text-xl font-bold text-foreground">Configurar Nexus Finance</h1>
             <p className="text-sm text-muted-foreground">Passo {step} de {STEPS.length}</p>
           </div>
         </div>
