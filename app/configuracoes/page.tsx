@@ -75,8 +75,15 @@ function SettingItem({
 }) {
   const [enabled, setEnabled] = useState(defaultOn ?? false)
 
+  const handleClick = () => {
+    if (toggle) {
+      setEnabled(!enabled)
+    }
+  }
+
   return (
     <motion.button
+      onClick={handleClick}
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: index * 0.05 }}
@@ -90,11 +97,7 @@ function SettingItem({
         <p className="text-xs text-muted-foreground truncate">{description}</p>
       </div>
       {toggle ? (
-        <button
-          onClick={(e) => {
-            e.stopPropagation()
-            setEnabled(!enabled)
-          }}
+        <div
           className={`relative w-12 h-7 rounded-full transition-colors ${
             enabled ? "bg-primary" : "bg-border"
           }`}
@@ -104,7 +107,7 @@ function SettingItem({
             animate={{ left: enabled ? "calc(100% - 24px)" : "4px" }}
             transition={{ type: "spring", stiffness: 500, damping: 30 }}
           />
-        </button>
+        </div>
       ) : (
         <ChevronRight className="w-5 h-5 text-muted-foreground" />
       )}

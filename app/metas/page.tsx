@@ -103,7 +103,7 @@ function GoalCard({ goal, index }: { goal: {
         <div className="bg-card/50 rounded-xl p-4">
           <p className="text-xs text-muted-foreground">Meta mensal</p>
           <p className="text-lg font-semibold text-foreground mt-1">
-            R$ {goal.monthlyTarget.toLocaleString("pt-BR")}
+            R$ {(goal.monthlyTarget ?? 0).toLocaleString("pt-BR")}
           </p>
         </div>
       </div>
