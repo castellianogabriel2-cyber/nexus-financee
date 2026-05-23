@@ -271,19 +271,32 @@
   box-shadow: 0 0 40px -10px oklch(0.65 0.22 25 / 0.4);
 }
 
-/* Glass effect */
+/* Glass effect - refined premium */
 .glass {
   background: var(--card);
-  opacity: 0.6;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  opacity: 0.7;
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .glass-strong {
   background: var(--background);
-  opacity: 0.8;
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
+  opacity: 0.85;
+  backdrop-filter: blur(32px) saturate(180%);
+  -webkit-backdrop-filter: blur(32px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Premium shadows */
+.shadow-premium {
+  box-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.1),
+              0 2px 8px -2px rgba(0, 0, 0, 0.06);
+}
+
+.shadow-premium-lg {
+  box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.12),
+              0 4px 16px -4px rgba(0, 0, 0, 0.08);
 }
 
 /* Subtle gradient backgrounds */
@@ -293,4 +306,14 @@
 
 .gradient-spotlight {
   background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 0%), var(--primary-glow), transparent 40%);
+}
+
+/* Premium shimmer animation */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }

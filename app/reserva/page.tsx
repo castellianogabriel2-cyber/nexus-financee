@@ -1,6 +1,8 @@
 "use client"
 
+import { useState } from "react"
 import { motion } from "framer-motion"
+import Link from "next/link"
 import {
   Shield,
   TrendingUp,
@@ -14,9 +16,13 @@ import {
 import { AreaChart, Area, ResponsiveContainer, Tooltip, XAxis } from "recharts"
 import { useFinance } from "@/providers/finance-provider"
 import { computeMonthExpenses } from "@/lib/finance/compute"
+import { createClient } from "@/lib/supabase/client"
 
 export default function ReservaPage() {
-  const { profile, fundDeposits, transactions } = useFinance()
+  const { profile, fundDeposits, transactions, refresh } = useFinance()
+  const [showDepositModal, setShowDepositModal] = useState(false)
+  const [depositAmount, setDepositAmount] = useState("")
+  const [depositing, setDepositing] = useState(false)
 
   const reservaData = {
     atual: Number(profile?.emergency_reserve_current ?? 0),
@@ -41,6 +47,50 @@ export default function ReservaPage() {
   const mesesCobertos = reservaData.atual / reservaData.gastoMensal
   const faltam = Math.max(0, reservaData.meta - reservaData.atual)
   const statusSaude = mesesCobertos >= 6 ? "otimo" : mesesCobertos >= 3 ? "bom" : "alerta"
+
+  const handleDeposit = async () => {
+    if (!depositAmount || depositing) return
+
+    setDepositing(true)
+    try {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      
+      if (!user) return
+
+      const amount = parseFloat(depositAmount.replace(/\D/g, "")) / 100
+
+      // Insert deposit
+      await supabase.from("fund_deposits").insert({
+        user_id: user.id,
+        amount: amount,
+        notes: "Depósito manual",
+        deposit_date: new Date().toISOString(),
+      })
+
+      // Update emergency reserve
+      const newReserve = reservaData.atual + amount
+      await supabase.from("profiles").update({
+        emergency_reserve_current: newReserve,
+      }).eq("id", user.id)
+
+      await refresh()
+      setShowDepositModal(false)
+      setDepositAmount("")
+    } catch (error) {
+      console.error("Erro ao depositar:", error)
+    } finally {
+      setDepositing(false)
+    }
+  }
+
+  const formatMoney = (v: string) => {
+    const num = v.replace(/\D/g, "")
+    return (parseInt(num || "0") / 100).toLocaleString("pt-BR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })
+  }
 
   return (
     <div className="max-w-4xl mx-auto px-4 lg:px-8 py-6 lg:py-12">
@@ -202,14 +252,13 @@ export default function ReservaPage() {
       >
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold text-foreground">Depositos recentes</h3>
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-success text-success-foreground text-sm font-medium"
+          <button
+            onClick={() => setShowDepositModal(true)}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-success text-success-foreground text-sm font-medium hover:bg-success/90 transition-colors"
           >
             <Plus className="w-4 h-4" />
             Depositar
-          </motion.button>
+          </button>
         </div>
 
         <div className="space-y-3">
@@ -235,6 +284,50 @@ export default function ReservaPage() {
           ))}
         </div>
       </motion.div>
+
+      {/* Deposit Modal */}
+      {showDepositModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-card border border-border/50 rounded-3xl p-6 w-full max-w-md"
+          >
+            <h3 className="text-xl font-semibold text-foreground mb-4">Depositar na reserva</h3>
+            <div className="mb-4">
+              <label className="text-sm text-muted-foreground mb-2 block">Valor</label>
+              <div className="flex items-center gap-2 py-4 px-4 rounded-xl bg-card/50 border border-border/50">
+                <span className="text-muted-foreground">R$</span>
+                <input
+                  inputMode="numeric"
+                  value={formatMoney(depositAmount)}
+                  onChange={(e) => setDepositAmount(e.target.value.replace(/\D/g, ""))}
+                  className="flex-1 bg-transparent text-2xl font-bold text-foreground outline-none"
+                  placeholder="0,00"
+                />
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setShowDepositModal(false)
+                  setDepositAmount("")
+                }}
+                className="flex-1 py-3 rounded-xl bg-card/50 border border-border/50 text-foreground font-medium"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleDeposit}
+                disabled={!depositAmount || depositing}
+                className="flex-1 py-3 rounded-xl bg-success text-success-foreground font-medium disabled:opacity-50"
+              >
+                {depositing ? "Depositando..." : "Depositar"}
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   )
 }

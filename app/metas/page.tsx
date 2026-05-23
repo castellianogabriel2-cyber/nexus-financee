@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
+import Link from "next/link"
 import {
   Target,
   Plus,
@@ -109,9 +110,9 @@ function GoalCard({ goal, index }: { goal: {
       </div>
 
       {/* Action */}
-      <button className="w-full mt-4 py-3 rounded-xl bg-card/50 border border-border/50 text-foreground text-sm font-medium hover:bg-card/70 transition-colors flex items-center justify-center gap-2">
+      <button className="w-full mt-4 py-3 rounded-xl bg-card/50 border border-border/50 text-foreground text-sm font-medium hover:bg-card/70 transition-colors flex items-center justify-center gap-2 opacity-50 cursor-not-allowed">
         <Plus className="w-4 h-4" />
-        Adicionar valor
+        Adicionar valor (em breve)
       </button>
     </motion.div>
   )
@@ -156,14 +157,10 @@ export default function MetasPage() {
           </p>
         </div>
 
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          className="flex items-center gap-2 px-5 py-3 rounded-xl bg-primary text-primary-foreground text-sm font-medium glow-primary"
-        >
+        <Link href="/onboarding" className="flex items-center gap-2 px-5 py-3 rounded-xl bg-primary text-primary-foreground text-sm font-medium glow-primary">
           <Plus className="w-4 h-4" />
           Nova meta
-        </motion.button>
+        </Link>
       </motion.div>
 
       {/* Overview */}

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
+import Link from "next/link"
 import {
   Wallet,
   TrendingUp,
@@ -284,9 +285,9 @@ export default function CarteiraPage() {
         >
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-foreground">Transacoes recentes</h3>
-            <button className="text-sm text-primary font-medium hover:underline">
+            <Link href="/gastos" className="text-sm text-primary font-medium hover:underline">
               Ver todas
-            </button>
+            </Link>
           </div>
 
           <div className="space-y-3">

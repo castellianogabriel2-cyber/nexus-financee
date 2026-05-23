@@ -8,12 +8,8 @@ import { ThemeProvider } from '@/components/theme-provider'
 import { ToastProvider } from '@/components/notifications/toast'
 import { ServiceWorkerRegistration } from '@/components/service-worker-registration'
 import { PremiumLockScreen } from '@/components/security/premium-lock-screen'
+import { GlobalErrorBoundary } from '@/components/global-error-boundary'
 import './globals.css'
-
-export const dynamic = 'force-dynamic'
-
-const _geist = Geist({ subsets: ["latin"] });
-const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: 'Nexus Finance - Dashboard Financeiro Premium',
@@ -81,20 +77,42 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/branding/logo-light.png" />
       </head>
       <body className="font-sans antialiased min-h-screen">
-        <PremiumLockScreen />
-        <ServiceWorkerRegistration />
-        <ThemeProvider>
-          <ToastProvider>
-            <AuthProvider>
-              <AuthRouteGuard>
-                <AppShell>
-                  {children}
-                </AppShell>
-              </AuthRouteGuard>
-            </AuthProvider>
-          </ToastProvider>
-        </ThemeProvider>
+        <GlobalErrorBoundary>
+          <PremiumLockScreen />
+          <ServiceWorkerRegistration />
+          <ThemeProvider>
+            <ToastProvider>
+              <AuthProvider>
+                <AuthRouteGuard>
+                  <AppShell>
+                    {children}
+                  </AppShell>
+                </AuthRouteGuard>
+              </AuthProvider>
+            </ToastProvider>
+          </ThemeProvider>
+        </GlobalErrorBoundary>
         {process.env.NODE_ENV === 'production' && <Analytics />}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if (typeof window !== 'undefined' && 'serviceWorker' in navigator && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+                navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                  registrations.forEach(function(registration) {
+                    registration.unregister();
+                  });
+                });
+                if ('caches' in window) {
+                  caches.keys().then(function(cacheNames) {
+                    cacheNames.forEach(function(cacheName) {
+                      caches.delete(cacheName);
+                    });
+                  });
+                }
+              }
+            `,
+          }}
+        />
       </body>
     </html>
   )

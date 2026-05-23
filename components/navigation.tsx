@@ -19,6 +19,7 @@ import {
   Receipt,
   Calendar,
   Download,
+  Bot,
 } from "lucide-react"
 import { useFinance } from "@/providers/finance-provider"
 
@@ -30,10 +31,8 @@ const navItems = [
   { href: "/gastos", icon: Receipt, label: "Gastos" },
   { href: "/metas", icon: Target, label: "Metas" },
   { href: "/reserva", icon: Shield, label: "Reserva" },
-  { href: "/parcelamentos", icon: CalendarClock, label: "Parcelamentos" },
-  { href: "/calendario", icon: Calendar, label: "Calendario" },
-  { href: "/analytics", icon: BarChart3, label: "Analytics" },
-  { href: "/exportar", icon: Download, label: "Exportar" },
+  { href: "/ia", icon: Bot, label: "IA" },
+  { href: "/mais", icon: Sparkles, label: "Mais" },
   { href: "/configuracoes", icon: Settings, label: "Configuracoes" },
 ]
 
@@ -41,7 +40,7 @@ const mobileNavItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Home" },
   { href: "/carteira", icon: Wallet, label: "Carteira" },
   { href: "/nova-transacao", icon: Plus, label: "Novo", isMain: true },
-  { href: "/exportar", icon: Download, label: "Exportar" },
+  { href: "/ia", icon: Bot, label: "IA" },
   { href: "/configuracoes", icon: Settings, label: "Config" },
 ]
 
@@ -127,7 +126,7 @@ export function MobileNav() {
   const pathname = usePathname()
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 lg:hidden glass-strong border-t border-border/30" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+    <nav className="fixed bottom-0 left-0 right-0 z-50 lg:hidden glass-strong border-t border-border/30" style={{ paddingBottom: 'env(safe-area-inset-bottom, 20px)' }}>
       <div className="flex items-center justify-around h-20 px-2">
         {mobileNavItems.map((item) => {
           const isActive = pathname === item.href
@@ -142,7 +141,7 @@ export function MobileNav() {
                 <motion.div
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center glow-primary shadow-lg"
+                  className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center glow-primary shadow-lg"
                 >
                   <item.icon className="w-6 h-6 text-primary-foreground" />
                 </motion.div>
@@ -154,7 +153,7 @@ export function MobileNav() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all ${
+              className={`flex flex-col items-center gap-1 px-4 py-3 rounded-xl transition-all min-w-[64px] min-h-[64px] ${
                 isActive ? "text-primary" : "text-muted-foreground"
               }`}
             >

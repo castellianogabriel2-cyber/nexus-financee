@@ -161,13 +161,13 @@ function CardDetails({ card }: { card: CardUI }) {
 
       {/* Quick actions */}
       <div className="grid grid-cols-2 gap-3">
-        <button className="flex items-center justify-center gap-2 p-4 rounded-2xl bg-card/50 border border-border/50 text-foreground hover:bg-card/70 transition-colors">
+        <button className="flex items-center justify-center gap-2 p-4 rounded-2xl bg-card/50 border border-border/50 text-foreground hover:bg-card/70 transition-colors opacity-50 cursor-not-allowed">
           <CreditCard className="w-5 h-5" />
-          <span className="text-sm font-medium">Ver fatura</span>
+          <span className="text-sm font-medium">Ver fatura (em breve)</span>
         </button>
-        <button className="flex items-center justify-center gap-2 p-4 rounded-2xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors">
+        <button className="flex items-center justify-center gap-2 p-4 rounded-2xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors opacity-50 cursor-not-allowed">
           <TrendingUp className="w-5 h-5" />
-          <span className="text-sm">Pagar fatura</span>
+          <span className="text-sm">Pagar fatura (em breve)</span>
         </button>
       </div>
     </motion.div>
