@@ -1,6 +1,9 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import { Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { motion } from "framer-motion"
 
 interface PremiumButtonProps extends React.ComponentProps<typeof Button> {
   loading?: boolean
@@ -16,24 +19,39 @@ export function PremiumButton({
   ...props 
 }: PremiumButtonProps) {
   return (
-    <Button
-      disabled={disabled || loading}
-      className={cn(
-        "relative overflow-hidden transition-all duration-200",
-        "hover:scale-[1.02] active:scale-[0.98]",
-        "disabled:hover:scale-100 disabled:active:scale-100",
-        className
-      )}
-      {...props}
+    <motion.div
+      whileHover={!disabled && !loading ? { scale: 1.02 } : {}}
+      whileTap={!disabled && !loading ? { scale: 0.98 } : {}}
+      transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
     >
-      {loading && (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <Loader2 className="w-4 h-4 animate-spin" />
-        </div>
-      )}
-      <span className={cn("transition-opacity duration-200", loading && "opacity-0")}>
-        {loading ? loadingText : children}
-      </span>
-    </Button>
+      <Button
+        disabled={disabled || loading}
+        className={cn(
+          "relative overflow-hidden transition-all duration-300",
+          "transition-smooth",
+          "no-tap-highlight",
+          className
+        )}
+        {...props}
+      >
+        {loading && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="absolute inset-0 flex items-center justify-center"
+          >
+            <Loader2 className="w-4 h-4 animate-spin" />
+          </motion.div>
+        )}
+        <motion.span 
+          initial={{ opacity: 1 }}
+          animate={{ opacity: loading ? 0 : 1 }}
+          transition={{ duration: 0.2 }}
+          className={loading ? "invisible" : ""}
+        >
+          {loading ? loadingText : children}
+        </motion.span>
+      </Button>
+    </motion.div>
   )
 }

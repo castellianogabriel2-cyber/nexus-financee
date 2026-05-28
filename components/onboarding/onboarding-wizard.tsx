@@ -19,17 +19,20 @@ import {
 } from "lucide-react"
 
 const STEPS = [
-  { id: 1, title: "Como podemos te chamar?", icon: User },
-  { id: 2, title: "Sua situacao financeira", icon: Wallet },
-  { id: 3, title: "Reserva de emergencia", icon: Shield },
-  { id: 4, title: "Metas financeiras", icon: Target },
-  { id: 5, title: "Seus cartoes", icon: CreditCard },
-  { id: 6, title: "Gastos fixos", icon: Receipt },
+  { id: 1, title: "Como podemos te chamar?", subtitle: "Personalize sua experiencia desde o primeiro dia.", icon: User },
+  { id: 2, title: "Sua situacao financeira", subtitle: "Sem dados ficticios — apenas o que voce informar.", icon: Wallet },
+  { id: 3, title: "Qual sua maior dificuldade?", subtitle: "Vamos adaptar o Nexus para suas necessidades.", icon: Target },
+  { id: 4, title: "Reserva de emergencia", subtitle: "Quanto voce quer guardar para imprevistos?", icon: Shield },
+  { id: 5, title: "Metas financeiras", subtitle: "Opcional — adicione metas que deseja alcancar.", icon: Target },
+  { id: 6, title: "Seus cartoes", subtitle: "Opcional — cadastre seus cartoes de credito.", icon: CreditCard },
+  { id: 7, title: "Gastos fixos", subtitle: "Opcional — aluguel, internet, assinaturas...", icon: Receipt },
 ]
 
 type GoalInput = { name: string; target: string; color: string }
 type CardInput = { bank: string; limit: string; digits: string }
 type FixedInput = { name: string; amount: string }
+
+type FinancialDifficulty = 'economizar' | 'dividas' | 'investir' | 'controlar' | 'organizar' | null
 
 export function OnboardingWizard() {
   const [step, setStep] = useState(1)
@@ -39,6 +42,7 @@ export function OnboardingWizard() {
   const [fullName, setFullName] = useState("")
   const [monthlyIncome, setMonthlyIncome] = useState("")
   const [currentBalance, setCurrentBalance] = useState("")
+  const [financialDifficulty, setFinancialDifficulty] = useState<FinancialDifficulty>(null)
   const [reserveTarget, setReserveTarget] = useState("")
   const [goals, setGoals] = useState<GoalInput[]>([{ name: "", target: "", color: "#34d399" }])
   const [cards, setCards] = useState<CardInput[]>([{ bank: "", limit: "", digits: "" }])
@@ -57,7 +61,8 @@ export function OnboardingWizard() {
   const canProceed = () => {
     if (step === 1) return fullName.trim().length >= 2
     if (step === 2) return parseMoney(monthlyIncome) > 0
-    if (step === 3) return parseMoney(reserveTarget) >= 0
+    if (step === 3) return financialDifficulty !== null
+    if (step === 4) return parseMoney(reserveTarget) >= 0
     return true
   }
 
@@ -92,6 +97,7 @@ export function OnboardingWizard() {
           cash_balance: balance,
           emergency_reserve_target: reserve,
           emergency_reserve_current: 0,
+          financial_difficulty: financialDifficulty,
           onboarding_completed: true,
           updated_at: new Date().toISOString(),
         },
@@ -270,14 +276,7 @@ export function OnboardingWizard() {
             className="glass-strong rounded-3xl p-6 lg:p-8 border border-border/50"
           >
             <h2 className="text-2xl font-bold text-foreground mb-2">{STEPS[step - 1].title}</h2>
-            <p className="text-muted-foreground text-sm mb-6">
-              {step === 1 && "Personalize sua experiencia desde o primeiro dia."}
-              {step === 2 && "Sem dados ficticios — apenas o que voce informar."}
-              {step === 3 && "Quanto voce quer guardar para imprevistos?"}
-              {step === 4 && "Opcional — adicione metas que deseja alcancar."}
-              {step === 5 && "Opcional — cadastre seus cartoes de credito."}
-              {step === 6 && "Opcional — aluguel, internet, assinaturas..."}
-            </p>
+            <p className="text-muted-foreground text-sm mb-6">{STEPS[step - 1].subtitle}</p>
 
             {step === 1 && (
               <input
@@ -321,6 +320,36 @@ export function OnboardingWizard() {
             )}
 
             {step === 3 && (
+              <div className="space-y-3">
+                {[
+                  { value: 'economizar' as const, label: 'Quero economizar mais', icon: '💰' },
+                  { value: 'dividas' as const, label: 'Quero sair das dívidas', icon: '📉' },
+                  { value: 'investir' as const, label: 'Quero começar a investir', icon: '📈' },
+                  { value: 'controlar' as const, label: 'Quero controlar meus gastos', icon: '🎯' },
+                  { value: 'organizar' as const, label: 'Quero organizar minhas finanças', icon: '📊' },
+                ].map((option) => (
+                  <motion.button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setFinancialDifficulty(option.value)}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className={`w-full p-4 rounded-2xl border-2 text-left transition-all ${
+                      financialDifficulty === option.value
+                        ? 'border-primary bg-primary/10'
+                        : 'border-border/50 bg-card/30 hover:border-border/80'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">{option.icon}</span>
+                      <span className="font-medium text-foreground">{option.label}</span>
+                    </div>
+                  </motion.button>
+                ))}
+              </div>
+            )}
+
+            {step === 4 && (
               <div className="flex items-center gap-2 py-4 px-4 rounded-2xl bg-card/50 border border-border/50">
                 <span className="text-muted-foreground">R$</span>
                 <input
@@ -333,7 +362,7 @@ export function OnboardingWizard() {
               </div>
             )}
 
-            {step === 4 && (
+            {step === 5 && (
               <div className="space-y-3">
                 {goals.map((g, i) => (
                   <div key={i} className="flex gap-2">
@@ -370,7 +399,7 @@ export function OnboardingWizard() {
               </div>
             )}
 
-            {step === 5 && (
+            {step === 6 && (
               <div className="space-y-3">
                 {cards.map((c, i) => (
                   <div key={i} className="space-y-2 p-4 rounded-2xl bg-card/30 border border-border/40">
@@ -419,7 +448,7 @@ export function OnboardingWizard() {
               </div>
             )}
 
-            {step === 6 && (
+            {step === 7 && (
               <div className="space-y-3">
                 {fixedExpenses.map((f, i) => (
                   <div key={i} className="flex gap-2">

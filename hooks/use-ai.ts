@@ -2,6 +2,9 @@ import { useState, useCallback, useRef, useEffect } from 'react'
 import { useFinance } from '@/providers/finance-provider'
 import { FinanceEngine, FinanceData, AIResponse } from '@/lib/ai/finance-engine'
 import { parseFinancialCommand, ParsedTransaction, detectIntent } from '@/lib/ai/transaction-parser'
+import { ResponseEngine } from '@/lib/ai/response-engine'
+import { ConfirmationEngine } from '@/lib/ai/confirmation-engine'
+import { sanitizeTransactionPayload } from '@/lib/ai/sanitize-transaction'
 
 export interface Message {
   id: string
@@ -20,36 +23,17 @@ export function useAI() {
   const [isTyping, setIsTyping] = useState(false)
   const [pendingTransaction, setPendingTransaction] = useState<ParsedTransaction | null>(null)
   const engineRef = useRef<FinanceEngine | null>(null)
+  const confirmationEngineRef = useRef<ConfirmationEngine>(new ConfirmationEngine())
 
-  // Sanitize transaction payload to match exactly what Nova Transação sends
-  const sanitizeTransactionPayload = (transaction: ParsedTransaction, categoryId: string | null, paymentMethod: string) => {
-    const payload = {
-      type: transaction.type,
-      amount: transaction.amount,
-      category_id: categoryId,
-      payment_method: paymentMethod,
-      card_id: transaction.card_id,
-      description: transaction.description,
-      notes: transaction.notes,
-      attachment_url: transaction.attachment_url,
-      transaction_date: transaction.transaction_date,
-      installments_total: transaction.installments_total,
-      installment_current: transaction.installment_current,
-      parent_installment_id: transaction.parent_installment_id,
-    }
-
-    // Remove any undefined or null values (except category_id which can be null)
-    const sanitized: any = {}
-    for (const [key, value] of Object.entries(payload)) {
-      if (value !== undefined) {
-        sanitized[key] = value
-      }
-    }
-
-    return sanitized
-  }
-
+  // Remove local sanitizeTransactionPayload - use the imported one
+  // Initialize engine with real data from useFinance (same as dashboard)
   const initializeEngine = useCallback(() => {
+    console.log('[AI INITIALIZE ENGINE START]')
+    console.log('[AI TRANSACTIONS RAW]', transactions)
+    console.log('[AI TOTAL GASTOS]', totalGastos)
+    console.log('[AI RENDA]', renda)
+    console.log('[AI SALDO]', saldo)
+    
     // Filter transactions for current month expenses only
     const now = new Date()
     const currentMonth = now.getMonth()
@@ -62,11 +46,11 @@ export function useAI() {
              txDate.getFullYear() === currentYear
     })
 
-    console.log('[AI FINANCE DATA]', { totalGastos, renda, saldo, categorias, goalsData })
+    console.log('[AI MONTHLY EXPENSES COUNT]', monthExpenses.length)
     console.log('[AI MONTHLY EXPENSES]', monthExpenses)
     console.log('[AI CATEGORIES RAW]', categorias)
 
-    // Group expenses by category
+    // Group expenses by category ID
     const categoryGroups: Record<string, number> = {}
     monthExpenses.forEach(t => {
       const catId = t.category_id || 'uncategorized'
@@ -74,11 +58,26 @@ export function useAI() {
     })
     console.log('[AI CATEGORY GROUPS]', categoryGroups)
 
+    // Map category IDs to category names using allCategories
+    const categoryExpenses = Object.entries(categoryGroups).map(([catId, amount]) => {
+      const category = allCategories.find(c => c.id === catId)
+      return {
+        name: category?.name || 'Geral',
+        total: amount,
+        color: category?.color || '#888888'
+      }
+    })
+    console.log('[AI CATEGORY EXPENSES]', categoryExpenses)
+
     const financeData: FinanceData = {
       totalGastos,
       renda,
       saldo,
-      categorias,
+      categorias: categoryExpenses.map(cat => ({
+        name: cat.name,
+        items: [{ value: cat.total }],
+        color: cat.color
+      })),
       goals: goalsData,
       transactions: monthExpenses.map(t => ({
         amount: Number(t.amount),
@@ -87,10 +86,9 @@ export function useAI() {
       }))
     }
     console.log('[AI ENGINE DATA]', financeData)
-    console.log('[AI TRANSACTIONS]', transactions)
-    console.log('[AI EXPENSES]', monthExpenses)
     engineRef.current = new FinanceEngine(financeData)
-  }, [totalGastos, renda, saldo, categorias, goalsData, transactions])
+    console.log('[AI INITIALIZE ENGINE END]')
+  }, [totalGastos, renda, saldo, categorias, goalsData, transactions, allCategories])
 
   // Re-initialize engine whenever data changes
   useEffect(() => {
@@ -185,7 +183,7 @@ export function useAI() {
     }
 
     // If data is still loading, inform the user
-    if (loading && (intent === 'report' || intent === 'question')) {
+    if (loading && (intent === 'report')) {
       const loadingMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
@@ -199,8 +197,8 @@ export function useAI() {
       return
     }
 
-    // If it's a report or question, use the finance engine to answer
-    if (intent === 'report' || intent === 'question') {
+    // If it's a report, use the finance engine to answer
+    if (intent === 'report') {
       if (engineRef.current) {
         const response: AIResponse = engineRef.current.analyzeQuery(content)
 
@@ -220,35 +218,15 @@ export function useAI() {
       }
     }
 
-    // If it's an insight, generate insights
-    if (intent === 'insight') {
-      if (engineRef.current) {
-        const insights = engineRef.current.generateInsights()
-        
-        const insightMessages: Message[] = insights.map((insight, index) => ({
-          id: (Date.now() + index).toString(),
-          role: 'assistant',
-          content: insight.message,
-          type: insight.type,
-          timestamp: new Date(),
-          data: insight.data
-        }))
-
-        setMessages(prev => [...prev, ...insightMessages])
-        setIsTyping(false)
-        setIsLoading(false)
-        return
-      }
-    }
-
-    // Only parse as transaction if intent is create_transaction or unknown
-    if (intent === 'create_transaction' || intent === 'unknown') {
+    // Only parse as transaction if intent is create_expense, create_income, or unknown
+    if (intent === 'create_expense' || intent === 'create_income' || intent === 'unknown') {
       const parseResult = parseFinancialCommand(content)
       
       if (parseResult.success && parseResult.transaction) {
         console.log('[AI PARSED]', parseResult.transaction)
         
         setPendingTransaction(parseResult.transaction)
+        confirmationEngineRef.current.setPending(parseResult.transaction)
         
         const confirmationMessage: Message = {
           id: (Date.now() + 1).toString(),
@@ -283,41 +261,102 @@ export function useAI() {
     }
 
     // Check if user is confirming a pending transaction with text
-    if (pendingTransaction) {
+    if (pendingTransaction && confirmationEngineRef.current.isWaiting()) {
       const lowerContent = content.toLowerCase()
-      const confirmKeywords = ['sim', 'pode', 'confirma', 'salvar', 'ok', 'yes', 'confirmar']
-      const cancelKeywords = ['não', 'nao', 'cancela', 'cancelar', 'no', 'n']
       
-      if (confirmKeywords.some(keyword => lowerContent.includes(keyword))) {
-        await confirmTransaction()
+      if (confirmationEngineRef.current.isConfirmationResponse(lowerContent)) {
+        // Call confirmTransaction directly without dependency
+        const confirm = async () => {
+          if (!pendingTransaction) return
+          setIsLoading(true)
+          try {
+            console.log('[AI SAVE START]', pendingTransaction)
+            const categoryName = pendingTransaction.category_id || 'Geral'
+            const category = allCategories.find(cat => 
+              cat.name.toLowerCase() === categoryName.toLowerCase()
+            )
+            const categoryId = category?.id || null
+            
+            console.log('[AI CATEGORY MAPPING]', { categoryName, categoryId, category })
+            const paymentMethodMap: Record<string, string> = {
+              'credit_card': 'credito',
+              'debit_card': 'debito',
+              'pix': 'pix',
+              'cash': 'dinheiro',
+              'bank_transfer': 'transferencia',
+              'unknown': 'dinheiro'
+            }
+            const paymentMethod = paymentMethodMap[pendingTransaction.payment_method || 'unknown'] || 'dinheiro'
+            const sanitizedTransaction = sanitizeTransactionPayload(pendingTransaction, categoryId, paymentMethod)
+            console.log('[AI SAVE PAYLOAD]', sanitizedTransaction)
+            const { error } = await addTransaction(sanitizedTransaction)
+            console.log('[AI SAVE RESULT]', { error })
+            if (error) {
+              console.error('[AI SAVE ERROR]', error)
+              throw new Error(error)
+            }
+            console.log('[AI SAVE SUCCESS]')
+            await refresh()
+            const successMessage: Message = {
+              id: (Date.now() + 1).toString(),
+              role: 'assistant',
+              content: '✅ Transação salva com sucesso!',
+              type: 'answer',
+              timestamp: new Date()
+            }
+            setMessages(prev => [...prev, successMessage])
+          } catch (error) {
+            console.error('[AI SAVE ERROR]', error)
+            const errorMessage: Message = {
+              id: (Date.now() + 1).toString(),
+              role: 'assistant',
+              content: `❌ Erro ao salvar: ${error instanceof Error ? error.message : 'Erro desconhecido'}. Tente novamente.`,
+              type: 'warning',
+              timestamp: new Date()
+            }
+            setMessages(prev => [...prev, errorMessage])
+          }
+          setPendingTransaction(null)
+          confirmationEngineRef.current.clear()
+          setIsLoading(false)
+        }
+        confirm()
+        setIsTyping(false)
         return
       }
       
-      if (cancelKeywords.some(keyword => lowerContent.includes(keyword))) {
-        cancelTransaction()
+      if (confirmationEngineRef.current.isCancellationResponse(lowerContent)) {
+        confirmationEngineRef.current.clear()
+        setPendingTransaction(null)
+        const cancelMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: 'Cancelado.',
+          type: 'answer',
+          timestamp: new Date()
+        }
+        setMessages(prev => [...prev, cancelMessage])
+        setIsTyping(false)
+        setIsLoading(false)
         return
       }
     }
 
-    // Generate regular response
-    if (engineRef.current) {
-      const response: AIResponse = engineRef.current.analyzeQuery(content)
-
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: response.message,
-        type: response.type,
-        timestamp: new Date(),
-        data: response.data
-      }
-
-      setMessages(prev => [...prev, assistantMessage])
+    // Generate default response for unknown intents
+    const response = ResponseEngine.unknown()
+    const assistantMessage: Message = {
+      id: (Date.now() + 1).toString(),
+      role: 'assistant',
+      content: response.message,
+      type: response.type,
+      timestamp: new Date(),
+      data: response.data
     }
 
+    setMessages(prev => [...prev, assistantMessage])
     setIsTyping(false)
     setIsLoading(false)
-  }, [initializeEngine])
+  }, [initializeEngine, loading, pendingTransaction, allCategories, addTransaction, refresh])
 
   const confirmTransaction = useCallback(async () => {
     if (!pendingTransaction) return
@@ -328,10 +367,13 @@ export function useAI() {
       console.log('[AI SAVE START]', pendingTransaction)
       
       // Map category name to category_id
+      const categoryName = pendingTransaction.category_id || 'Geral'
       const category = allCategories.find(cat => 
-        cat.name.toLowerCase() === pendingTransaction.category_id?.toLowerCase() || ''
+        cat.name.toLowerCase() === categoryName.toLowerCase()
       )
       const categoryId = category?.id || null
+      
+      console.log('[AI CATEGORY MAPPING]', { categoryName, categoryId, category })
 
       // Map payment method to the format expected by addTransaction
       const paymentMethodMap: Record<string, string> = {
@@ -388,6 +430,7 @@ export function useAI() {
     }
 
     setPendingTransaction(null)
+    confirmationEngineRef.current.clear()
     setIsLoading(false)
   }, [pendingTransaction, addTransaction, allCategories, refresh])
 
@@ -406,6 +449,7 @@ export function useAI() {
   }, [])
 
   const cancelTransaction = useCallback(() => {
+    confirmationEngineRef.current.clear()
     setPendingTransaction(null)
     
     const cancelMessage: Message = {
