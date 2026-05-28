@@ -91,7 +91,7 @@ export async function updateSession(request: NextRequest) {
     }
   }
 
-  // Onboarding já completo → dashboard
+  // Onboarding já completo → home (Nexus OS)
   if (user && pathname === "/onboarding") {
     const { data: profile } = await supabase
       .from("profiles")
@@ -100,9 +100,9 @@ export async function updateSession(request: NextRequest) {
       .maybeSingle()
 
     if (profile?.onboarding_completed) {
-      const dashboardUrl = request.nextUrl.clone()
-      dashboardUrl.pathname = "/dashboard"
-      return NextResponse.redirect(dashboardUrl)
+      const homeUrl = request.nextUrl.clone()
+      homeUrl.pathname = "/"
+      return NextResponse.redirect(homeUrl)
     }
   }
 

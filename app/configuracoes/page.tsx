@@ -33,12 +33,10 @@ import {
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/providers/auth-provider"
 import { useFinance } from "@/providers/finance-provider"
-import { ModoApertoPanel } from "@/components/modo-aperto-panel"
 import { Modal } from "@/components/modal"
 import { createClient } from "@/lib/supabase/client"
 import { useTheme } from "next-themes"
 import { FinancialScoreCard } from "@/components/analytics/insight-cards"
-import { PinSettings } from "@/components/security/pin-settings"
 
 const settingsSections = [
   {
@@ -150,9 +148,8 @@ function getInitials(name: string | null | undefined) {
 export default function ConfiguracoesPage() {
   const router = useRouter()
   const { signOut, user } = useAuth()
-  const { profile, toggleModoAperto, updateProfile, financialScore } = useFinance()
+  const { profile, updateProfile, financialScore } = useFinance()
   const { theme, setTheme } = useTheme()
-  const [modoApertoOpen, setModoApertoOpen] = useState(false)
   const [activeModal, setActiveModal] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null)
@@ -409,50 +406,7 @@ export default function ConfiguracoesPage() {
         <FinancialScoreCard score={financialScore} />
       </motion.div>
 
-      {/* Modo Aperto */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.08 }}
-        className="bg-card/30 border border-warning/30 rounded-3xl p-6 mb-6"
-      >
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-warning/20 flex items-center justify-center">
-              <ShieldAlert className="w-6 h-6 text-warning" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-foreground">Modo Aperto</h3>
-              <p className="text-sm text-muted-foreground">Orcamento de sobrevivencia ate o proximo pagamento</p>
-            </div>
-          </div>
-          <button
-            onClick={() => {
-              if (profile?.modo_aperto) setModoApertoOpen(true)
-              else toggleModoAperto(true)
-            }}
-            className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-              profile?.modo_aperto
-                ? "bg-warning/20 text-warning"
-                : "bg-primary text-primary-foreground"
-            }`}
-          >
-            {profile?.modo_aperto ? "Ver detalhes" : "Ativar"}
-          </button>
-        </div>
-      </motion.div>
-      <ModoApertoPanel open={modoApertoOpen} onClose={() => setModoApertoOpen(false)} />
-
       {/* PIN Settings */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.09 }}
-        className="mb-6"
-      >
-        <PinSettings />
-      </motion.div>
-
       {/* Settings Sections */}
       <div className="space-y-6">
         {settingsSections.map((section, sectionIndex) => (

@@ -1,19 +1,17 @@
 import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
-import { AppShell } from '@/components/app-shell'
 import { AuthProvider } from '@/providers/auth-provider'
 import { AuthRouteGuard } from '@/components/auth-route-guard'
 import { ThemeProvider } from '@/components/theme-provider'
 import { ToastProvider } from '@/components/notifications/toast'
 import { ServiceWorkerRegistration } from '@/components/service-worker-registration'
-import { PremiumLockScreen } from '@/components/security/premium-lock-screen'
 import { GlobalErrorBoundary } from '@/components/global-error-boundary'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Nexus Finance - Dashboard Financeiro Premium',
-  description: 'Seu controle financeiro pessoal premium',
+  title: 'Nexus OS - Sistema Operacional Financeiro',
+  description: 'Seu sistema operacional financeiro emocional e premium',
   generator: 'v0.app',
   icons: {
     icon: [
@@ -40,7 +38,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'Nexus Finance',
+    title: 'Nexus OS',
   },
 }
 
@@ -50,16 +48,7 @@ export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false,
   viewportFit: 'cover',
-  themeColor: [
-    {
-      media: '(prefers-color-scheme: light)',
-      color: '#ffffff',
-    },
-    {
-      media: '(prefers-color-scheme: dark)',
-      color: '#09090b',
-    },
-  ],
+  themeColor: '#0a0a0a',
 }
 
 export default function RootLayout({
@@ -76,17 +65,14 @@ export default function RootLayout({
         <meta name="color-scheme" content="dark light" />
         <link rel="apple-touch-icon" href="/branding/logo-light.png" />
       </head>
-      <body className="font-sans antialiased min-h-screen">
+      <body className="font-sans antialiased min-h-screen" style={{ background: '#050505' }}>
         <GlobalErrorBoundary>
-          <PremiumLockScreen />
           <ServiceWorkerRegistration />
           <ThemeProvider>
             <ToastProvider>
               <AuthProvider>
                 <AuthRouteGuard>
-                  <AppShell>
-                    {children}
-                  </AppShell>
+                  {children}
                 </AuthRouteGuard>
               </AuthProvider>
             </ToastProvider>

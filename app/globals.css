@@ -73,72 +73,72 @@
 }
 
 .dark {
-  /* Dark mode - ultra deep black with subtle blue undertone */
-  --background: oklch(0.035 0.008 265);
-  --background-subtle: oklch(0.055 0.012 265);
+  /* Nexus OS - Graphite black background */
+  --background: #0a0a0a;
+  --background-subtle: #111111;
   
   /* Foreground - crisp whites */
-  --foreground: oklch(0.98 0 0);
-  --foreground-muted: oklch(0.65 0.01 265);
+  --foreground: #ffffff;
+  --foreground-muted: #a3a3a3;
   
   /* Card system - layered glass */
-  --card: oklch(0.08 0.01 265);
-  --card-foreground: oklch(0.98 0 0);
-  --card-hover: oklch(0.1 0.012 265);
+  --card: #151515;
+  --card-foreground: #ffffff;
+  --card-hover: #1a1a1a;
   
   /* Elevated surfaces */
-  --popover: oklch(0.1 0.012 265);
-  --popover-foreground: oklch(0.98 0 0);
+  --popover: #1a1a1a;
+  --popover-foreground: #ffffff;
   
-  /* Primary - vibrant teal/cyan accent */
-  --primary: oklch(0.78 0.16 180);
-  --primary-foreground: oklch(0.1 0.02 180);
-  --primary-glow: oklch(0.78 0.16 180 / 0.3);
+  /* Primary - electric cyan accent */
+  --primary: #00d4ff;
+  --primary-foreground: #0a0a0a;
+  --primary-glow: rgba(0, 212, 255, 0.3);
   
   /* Secondary - subtle surface */
-  --secondary: oklch(0.12 0.01 265);
-  --secondary-foreground: oklch(0.85 0 0);
+  --secondary: #111111;
+  --secondary-foreground: #e5e5e5;
   
   /* Muted elements */
-  --muted: oklch(0.14 0.008 265);
-  --muted-foreground: oklch(0.5 0.01 265);
+  --muted: #1a1a1a;
+  --muted-foreground: #737373;
   
   /* Accent - matches primary */
-  --accent: oklch(0.78 0.16 180);
-  --accent-foreground: oklch(0.1 0.02 180);
+  --accent: #00d4ff;
+  --accent-foreground: #0a0a0a;
   
   /* Semantic colors */
-  --destructive: oklch(0.65 0.22 25);
-  --destructive-foreground: oklch(0.98 0 0);
-  --success: oklch(0.72 0.19 155);
-  --success-foreground: oklch(0.1 0.02 155);
-  --warning: oklch(0.8 0.16 75);
-  --warning-foreground: oklch(0.15 0.02 75);
+  --destructive: #f87171;
+  --destructive-foreground: #ffffff;
+  --success: #00ff9d;
+  --success-foreground: #0a0a0a;
+  --warning: #fbbf24;
+  --warning-foreground: #0a0a0a;
   
   /* Borders - barely visible */
-  --border: oklch(0.18 0.01 265);
-  --border-subtle: oklch(0.12 0.008 265);
-  --input: oklch(0.1 0.01 265);
-  --ring: oklch(0.78 0.16 180);
+  --border: rgba(255, 255, 255, 0.1);
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --input: rgba(255, 255, 255, 0.08);
+  --ring: #00d4ff;
   
   /* Chart colors - harmonious palette */
-  --chart-1: oklch(0.78 0.16 180);
-  --chart-2: oklch(0.72 0.19 155);
-  --chart-3: oklch(0.75 0.14 280);
-  --chart-4: oklch(0.8 0.16 75);
-  --chart-5: oklch(0.7 0.18 330);
-  --chart-6: oklch(0.68 0.16 220);
-  --chart-7: oklch(0.65 0.22 25);
+  --chart-1: #00d4ff;
+  --chart-2: #00ff9d;
+  --chart-3: #7c3aed;
+  --chart-4: #fbbf24;
+  --chart-5: #f87171;
+  --chart-6: #60a5fa;
+  --chart-7: #f472b6;
   
-  /* Sidebar */
-  --sidebar: oklch(0.045 0.01 265);
-  --sidebar-foreground: oklch(0.98 0 0);
-  --sidebar-primary: oklch(0.78 0.16 180);
-  --sidebar-primary-foreground: oklch(0.1 0.02 180);
-  --sidebar-accent: oklch(0.12 0.01 265);
-  --sidebar-accent-foreground: oklch(0.98 0 0);
-  --sidebar-border: oklch(0.15 0.01 265);
-  --sidebar-ring: oklch(0.78 0.16 180);
+  /* Sidebar - removed for Nexus OS */
+  --sidebar: #0a0a0a;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #00d4ff;
+  --sidebar-primary-foreground: #0a0a0a;
+  --sidebar-accent: #1a1a1a;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgba(255, 255, 255, 0.06);
+  --sidebar-ring: #00d4ff;
 }
 
 @theme inline {
@@ -199,8 +199,20 @@
   * {
     @apply border-border outline-ring/50;
   }
+  
+  html {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  
   body {
     @apply bg-background text-foreground antialiased;
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
     /* iOS Safe Area */
     padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
@@ -208,27 +220,11 @@
     padding-right: env(safe-area-inset-right);
   }
   
-  /* Prevent overscroll on iOS */
-  html {
-    overscroll-behavior: none;
-    -webkit-overflow-scrolling: touch;
-  }
-  
-  body {
-    overscroll-behavior: none;
-  }
-  
   /* Mobile improvements */
   @media (max-width: 768px) {
     * {
       -webkit-tap-highlight-color: transparent;
       -webkit-touch-callout: none;
-    }
-    
-    /* Prevent horizontal scroll */
-    body {
-      overflow-x: hidden;
-      max-width: 100vw;
     }
     
     /* Improve text rendering on mobile */
